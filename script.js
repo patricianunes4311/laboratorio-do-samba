@@ -5,6 +5,14 @@ const YOUTUBE_FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${
 
 const videoList = document.getElementById('video-list');
 
+function renderEmptyState() {
+  videoList.innerHTML = `
+    <div class="video-empty-state">
+      <p>Nenhum vídeo disponível no momento.</p>
+    </div>
+  `;
+}
+
 function formatDate(dateString) {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat('pt-BR', {
@@ -83,6 +91,11 @@ function renderVideoCard(item) {
 function renderVideos(items) {
   videoList.innerHTML = '';
 
+  if (!items || items.length === 0) {
+    renderEmptyState();
+    return;
+  }
+
   items.forEach((item) => {
     const card = renderVideoCard(item);
     videoList.appendChild(card);
@@ -124,9 +137,12 @@ async function fetchYouTubeVideos() {
 
     if (videos.length) {
       renderVideos(videos);
+    } else {
+      renderEmptyState();
     }
   } catch (error) {
     console.error(error);
+    renderEmptyState();
   }
 }
 
