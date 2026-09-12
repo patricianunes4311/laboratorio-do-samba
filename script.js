@@ -1,6 +1,7 @@
 const API_KEY = 'SUA_API_KEY_AQUI';
-const CHANNEL_ID = 'SEU_CHANNEL_ID';
+const CHANNEL_ID = 'UCcmfAdgeXGf4snbc76wSBaQ';
 const MAX_RESULTS = 6;
+const YOUTUBE_FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
 
 const videoList = document.getElementById('video-list');
 
@@ -11,6 +12,41 @@ function formatDate(dateString) {
     month: '2-digit',
     year: 'numeric'
   }).format(date);
+}
+
+function parseYouTubeFeed(xmlString) {
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlString, 'application/xml');
+  const entries = [...xml.querySelectorAll('entry')];
+
+  return entries.map((entry) => {
+    const videoId =
+      entry.querySelector('yt\:videoId')?.textContent ||
+      entry.querySelector('videoId')?.textContent ||
+      '';
+
+    const thumbnail =
+      entry.querySelector('media\:thumbnail')?.getAttribute('url') ||
+      entry.querySelector('thumbnail')?.getAttribute('url') ||
+      '';
+
+    const title = entry.querySelector('title')?.textContent || 'Vídeo do YouTube';
+    const publishedAt = entry.querySelector('published')?.textContent || new Date().toISOString();
+    const channelTitle = entry.querySelector('author name')?.textContent || 'YouTube';
+
+    return {
+      id: { videoId },
+      snippet: {
+        title,
+        publishedAt,
+        channelTitle,
+        thumbnails: {
+          high: { url: thumbnail },
+          medium: { url: thumbnail }
+        }
+      }
+    };
+  });
 }
 
 function renderVideoCard(item) {
@@ -54,22 +90,37 @@ function renderVideos(items) {
 }
 
 async function fetchYouTubeVideos() {
-  if (!API_KEY || API_KEY === 'SUA_API_KEY_AQUI' || !CHANNEL_ID || CHANNEL_ID === 'SEU_CHANNEL_ID') {
+  if (!CHANNEL_ID || CHANNEL_ID === 'SEU_CHANNEL_ID') {
     return;
   }
 
   try {
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`
-    );
+    if (API_KEY && API_KEY !== 'SUA_API_KEY_AQUI') {
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`
+      );
 
-    if (!response.ok) {
-      throw new Error(`Erro na API do YouTube: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`Erro na API do YouTube: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const videos = data.items.filter((item) => item.id && item.id.videoId);
+
+      if (videos.length) {
+        renderVideos(videos);
+        return;
+      }
     }
 
-    const data = await response.json();
+    const feedResponse = await fetch(YOUTUBE_FEED_URL);
 
-    const videos = data.items.filter((item) => item.id && item.id.videoId);
+    if (!feedResponse.ok) {
+      throw new Error(`Erro ao carregar o feed do YouTube: ${feedResponse.status}`);
+    }
+
+    const feedXml = await feedResponse.text();
+    const videos = parseYouTubeFeed(feedXml).slice(0, MAX_RESULTS);
 
     if (videos.length) {
       renderVideos(videos);
