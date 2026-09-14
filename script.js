@@ -4,6 +4,97 @@ const MAX_RESULTS = 6;
 const YOUTUBE_FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
 
 const videoList = document.getElementById('video-list');
+const quoteList = document.getElementById('quote-list');
+const sponsorList = document.getElementById('sponsor-list');
+
+const sponsorData = [
+  {
+    name: 'Casa do Samba',
+    type: 'Parceiro oficial',
+    logo: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    name: 'Terra do Ritmo',
+    type: 'Apoio cultural',
+    logo: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    name: 'Roda de Bamba',
+    type: 'Apoio institucional',
+    logo: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=600&q=80'
+  }
+];
+
+//campo de fragmentos de sabedoria 
+const quoteData = [
+  {
+    text: 'O samba não é só ritmo; é memória viva de quem construiu a cidade.',
+    author: 'Maria do Bairro',
+    topic: 'Memória e identidade',
+    link: 'https://www.youtube.com/results?search_query=Maria+do+Bairro+samba',
+    label: 'Ver entrevista de Maria do Bairro'
+  },
+  {
+    text: 'Quando a gente toca, a rua conversa. O samba carrega histórias que precisam ser ouvidas.',
+    author: 'Seu Nilo',
+    topic: 'Ritmo e tradição',
+    link: 'https://www.youtube.com/results?search_query=Seu+Nilo+samba',
+    label: 'Ver entrevista de Seu Nilo'
+  },
+  {
+    text: 'A cultura popular é poesia em movimento, e o samba é uma das suas vozes mais fortes.',
+    author: 'Clara Santos',
+    topic: 'Cultura e poesia',
+    link: 'https://www.youtube.com/results?search_query=Clara+Santos+samba',
+    label: 'Ver entrevista de Clara Santos'
+  }
+];
+
+//finalização do campo de fragmentos de sabedoria
+
+function renderQuotes() {
+  if (!quoteList) return;
+
+  // Renderiza os fragmentos de sabedoria no HTML
+
+  quoteList.innerHTML = quoteData
+    .map(
+      (quote) => `
+        <a class="quote-card" href="${quote.link}" aria-label="${quote.label}">
+          <span class="quote-mark">“</span>
+          <p>${quote.text}</p>
+          <div class="quote-author">
+            <strong>${quote.author}</strong>
+            <span>${quote.topic}</span>
+          </div>
+          <span class="quote-link">Ver entrevista</span>
+        </a>
+      `
+    )
+    .join('');
+}
+
+function renderSponsors() {
+  if (!sponsorList) return;
+
+  sponsorList.innerHTML = sponsorData
+    .map(
+      (sponsor) => `
+        <article class="sponsor-card">
+          <div class="sponsor-logo-wrap">
+            <img class="sponsor-logo" src="${sponsor.logo}" alt="Logo de ${sponsor.name}" />
+          </div>
+          <div class="sponsor-meta">
+            <span class="sponsor-badge">${sponsor.type}</span>
+            <strong>${sponsor.name}</strong>
+          </div>
+        </article>
+      `
+    )
+    .join('');
+}
+
+// Função para renderizar o estado vazio quando não há vídeos disponíveis
 
 function renderEmptyState() {
   videoList.innerHTML = `
@@ -13,6 +104,8 @@ function renderEmptyState() {
   `;
 }
 
+// Função para formatar a data no formato brasileiro (dd/mm/yyyy)
+
 function formatDate(dateString) {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat('pt-BR', {
@@ -21,6 +114,8 @@ function formatDate(dateString) {
     year: 'numeric'
   }).format(date);
 }
+
+// Função para analisar o feed XML do YouTube e extrair informações relevantes dos vídeos
 
 function parseYouTubeFeed(xmlString) {
   const parser = new DOMParser();
@@ -57,6 +152,8 @@ function parseYouTubeFeed(xmlString) {
   });
 }
 
+// Função para renderizar cada vídeo como um card clicável que abre o vídeo no YouTube em uma nova aba
+
 function renderVideoCard(item) {
   const card = document.createElement('article');
   card.className = 'video-card';
@@ -81,12 +178,15 @@ function renderVideoCard(item) {
     </div>
   `;
 
+// Adiciona um evento de clique ao card para abrir o vídeo no YouTube em uma nova aba
   card.addEventListener('click', () => {
     window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank', 'noopener,noreferrer');
   });
 
   return card;
 }
+
+// Função para renderizar a lista de vídeos no HTML, chamando a função renderVideoCard para cada vídeo
 
 function renderVideos(items) {
   videoList.innerHTML = '';
@@ -135,6 +235,8 @@ async function fetchYouTubeVideos() {
     const feedXml = await feedResponse.text();
     const videos = parseYouTubeFeed(feedXml).slice(0, MAX_RESULTS);
 
+    // Renderiza os vídeos ou o estado vazio, dependendo se há vídeos disponíveis
+
     if (videos.length) {
       renderVideos(videos);
     } else {
@@ -146,4 +248,6 @@ async function fetchYouTubeVideos() {
   }
 }
 
+renderQuotes();
+renderSponsors();
 fetchYouTubeVideos();
