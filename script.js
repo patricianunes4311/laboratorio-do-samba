@@ -7,6 +7,8 @@ const videoList = document.getElementById('video-list');
 const quoteList = document.getElementById('quote-list');
 const sponsorList = document.getElementById('sponsor-list');
 
+// Dados dos patrocinadores do projeto, incluindo nome, tipo e logo
+
 const sponsorData = [
   {
     name: 'Casa do Samba',
@@ -24,6 +26,8 @@ const sponsorData = [
     logo: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=600&q=80'
   }
 ];
+
+//finalização dos dados dos patrocinadores do projeto
 
 //campo de fragmentos de sabedoria 
 const quoteData = [
