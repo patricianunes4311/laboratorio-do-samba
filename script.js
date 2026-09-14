@@ -1,4 +1,4 @@
-const API_KEY = 'SUA_API_KEY_AQUI';
+const API_KEY = 'AIzaSyCywAwe-lBmeQBfVFobBnZrf8kxCxu_If4';
 const CHANNEL_ID = 'UCcmfAdgeXGf4snbc76wSBaQ';
 const MAX_RESULTS = 6;
 const YOUTUBE_FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
