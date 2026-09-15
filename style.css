@@ -674,26 +674,14 @@ a { color: inherit; text-decoration: none; }
 
 @media (max-width: 900px) {
   .hero-grid,
-  .about-grid,
-  .video-grid {
+  .about-grid {
     grid-template-columns: 1fr;
   }
 
+  .video-grid,
   .quote-grid,
   .sponsor-grid {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(82%, 1fr);
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    padding-bottom: 0.5rem;
-    gap: 1rem;
-  }
-
-  .quote-card,
-  .sponsor-card {
-    scroll-snap-align: start;
-    min-height: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .nav-links {
@@ -707,7 +695,10 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 560px) {
-  .stats {
+  .stats,
+  .video-grid,
+  .quote-grid,
+  .sponsor-grid {
     grid-template-columns: 1fr;
   }
 
@@ -731,5 +722,19 @@ a { color: inherit; text-decoration: none; }
 
   .logo img {
     width: 120px;
+  }
+
+  .brand-signature {
+    display: none;
+  }
+
+  .section {
+    padding: 3rem 0;
+  }
+
+  .video-card,
+  .quote-card,
+  .sponsor-card {
+    min-width: 0;
   }
 }
