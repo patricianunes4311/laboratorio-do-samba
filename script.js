@@ -27,7 +27,34 @@ const sponsorData = [
   }
 ];
 
-//finalização dos dados dos patrocinadores do projeto
+// Dados da agenda de eventos, incluindo data, dia, título, tipo, local e participantes
+
+const agendaData = [
+  {
+    date: '12/09/2026',
+    day: 'Sábado',
+    title: 'Gravação no Mercado de Arte e Cultura',
+    type: 'Evento',
+    location: 'Centro Histórico',
+    participants: 'Músicos, moradores e artistas locais'
+  },
+  {
+    date: '18/09/2026',
+    day: 'Sexta',
+    title: 'Entrevista com Seu Nilo',
+    type: 'Entrevista',
+    location: 'Estúdio do Samba',
+    participants: 'Seu Nilo e equipe do podcast'
+  },
+  {
+    date: '27/09/2026',
+    day: 'Sábado',
+    title: 'Roda de conversa sobre memória e identidade',
+    type: 'Roda de conversa',
+    location: 'Praça da Cultura',
+    participants: 'Comunidade e convidados especiais'
+  }
+];
 
 //campo de fragmentos de sabedoria 
 const quoteData = [
@@ -55,6 +82,30 @@ const quoteData = [
 ];
 
 //finalização do campo de fragmentos de sabedoria
+
+function renderAgenda() {
+  const agendaContainer = document.getElementById('agenda-list');
+  if (!agendaContainer) return;
+
+  agendaContainer.innerHTML = agendaData
+    .map(
+      (item) => `
+        <article class="agenda-card">
+          <div class="agenda-date">
+            <span class="agenda-day">${item.day}</span>
+            <strong>${item.date}</strong>
+          </div>
+          <div class="agenda-body">
+            <span class="agenda-type">${item.type}</span>
+            <h3>${item.title}</h3>
+            <p><strong>Local:</strong> ${item.location}</p>
+            <p><strong>Participantes:</strong> ${item.participants}</p>
+          </div>
+        </article>
+      `
+    )
+    .join('');
+}
 
 function renderQuotes() {
   if (!quoteList) return;
@@ -252,6 +303,7 @@ async function fetchYouTubeVideos() {
   }
 }
 
+renderAgenda();
 renderQuotes();
 renderSponsors();
 fetchYouTubeVideos();
